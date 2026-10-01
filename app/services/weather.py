@@ -2,11 +2,19 @@ import httpx
 from datetime import date
 from app.model import WeatherResponseModel
 from config import settings
+from app.services.cache import get_cache, set_cache
 
 
 async def fetch_weather(
     destination: str, start_date: date, end_date: date
 ) -> list[WeatherResponseModel]:
+    
+    cache_key = f"{destination}_{start_date}_{end_date}"
+    cached_data = get_cache(cache_key)
+    
+    if cached_data:
+        return cached_data
+        
 
     async with httpx.AsyncClient() as client:
         response = await client.get(
@@ -37,5 +45,8 @@ async def fetch_weather(
             )
 
             forecasts.append(forecast)
+            
+        # cache data for 1 hour
+        set_cache(cache_key,forecasts,ttl=3600)    
 
         return forecasts

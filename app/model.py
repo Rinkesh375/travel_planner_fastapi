@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from datetime import date
+from typing import Optional
 
 
 class TravelRequestModel(BaseModel):
@@ -16,3 +17,13 @@ class WeatherResponseModel(BaseModel):
     temperature_low: float
     humidity: float
     rain_chance: float
+
+
+
+class PlaceModel(BaseModel):
+    name: str
+    description: str
+    category: str
+    rating: float
+    estimated_time_hours: float
+    entry_fee: Optional[float] = None
