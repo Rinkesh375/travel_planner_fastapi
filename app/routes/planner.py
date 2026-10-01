@@ -1,6 +1,9 @@
+import asyncio
 from fastapi import APIRouter, HTTPException
 from app.model import TravelRequestModel
 from app.services.weather import fetch_weather
+from app.services.places import fetch_places
+from app.services.currency import fetch_currency_rates
 
 router = APIRouter(prefix="/plan", tags=["Travel Plan"])
 
@@ -28,13 +31,21 @@ async def create_travel_plan(travel_request: TravelRequestModel):
             status_code=400,
             detail="Travel plan cannot be longer than 14 days",
         )
-    
-    weather_data = await fetch_weather(
-        destination=travel_request.destination,
-        start_date=travel_request.start_date,
-        end_date=travel_request.end_date
+
+    weather_data, currency_rates = await asyncio.gather(
+        fetch_weather(
+            destination=travel_request.destination,
+            start_date=travel_request.start_date,
+            end_date=travel_request.end_date,
+        ),
+        await fetch_currency_rates(travel_request.base_currency),
     )
+
+    places_data = fetch_places(travel_request.destination)
+
     return {
         "message": "Travel plan created successfully",
-        "weather_data":weather_data    
+        "weather_data": weather_data,
+        "places_data": places_data,
+        "currency_data": currency_rates,
     }

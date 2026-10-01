@@ -1,4 +1,4 @@
-from model import PlaceModel
+from app.model import PlaceModel
 
 PLACES_DATABASE = {
     "manali": [
@@ -90,6 +90,6 @@ PLACES_DATABASE = {
     ]
 }
 
-async def fetch_places(destination: str) -> list[PlaceModel]:
+def fetch_places(destination: str) -> list[PlaceModel]:
     """Fetch places of interest for a given destination."""
     return PLACES_DATABASE.get(destination.lower(), [])
