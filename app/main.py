@@ -25,3 +25,4 @@ async def root():
 
 app.include_router(planner_router)
 app.include_router(stream_travel_plan)
+
